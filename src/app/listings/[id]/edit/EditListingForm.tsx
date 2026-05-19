@@ -81,7 +81,7 @@ export function EditListingForm({ listing }: EditListingFormProps) {
         label="Category"
         name="category"
         required
-        options={CATEGORIES}
+        options={[...CATEGORIES]}
         defaultValue={listing.category}
       />
       <Select
