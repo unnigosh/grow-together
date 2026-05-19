@@ -88,7 +88,7 @@ export function EditListingForm({ listing }: EditListingFormProps) {
         label="Listing type"
         name="listing_type"
         required
-        options={LISTING_TYPES}
+        options={[...LISTING_TYPES]}
         value={listingType}
         onChange={(e) => setListingType(e.target.value as ListingTypeValue)}
       />
