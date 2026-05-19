@@ -86,14 +86,14 @@ export function CreateListingForm({ userId }: CreateListingFormProps) {
         label="Category"
         name="category"
         required
-        options={CATEGORIES}
+        options={[...CATEGORIES]}
         defaultValue={CATEGORIES[0].value}
       />
       <Select
         label="Listing type"
         name="listing_type"
         required
-        options={LISTING_TYPES}
+        options={[...LISTING_TYPES]}
         value={listingType}
         onChange={(e) => setListingType(e.target.value as ListingTypeValue)}
       />
