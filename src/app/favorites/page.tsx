@@ -29,7 +29,7 @@ export default async function FavoritesPage() {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
-  const listings = (favorites ?? [])
+    const listings = ((favorites ?? []) as unknown as { listings: ListingWithDetails }[])
     .map((f) => f.listings)
     .filter(Boolean)
     .map((listing) => ({
