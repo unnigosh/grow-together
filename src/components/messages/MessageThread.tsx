@@ -13,6 +13,13 @@ interface MessageThreadProps {
   otherUser: Pick<Profile, "id" | "username" | "full_name" | "avatar_url">;
 }
 
+function formatMessageTime(date: string) {
+  return new Date(date).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export function MessageThread({
   conversationId,
   currentUserId,
@@ -57,10 +64,12 @@ export function MessageThread({
 
   async function sendMessage(e: React.FormEvent) {
     e.preventDefault();
+
     const text = content.trim();
-    if (!text) return;
+    if (!text || sending) return;
 
     setSending(true);
+
     const { data, error } = await supabase
       .from("messages")
       .insert({
@@ -72,72 +81,98 @@ export function MessageThread({
       .single();
 
     if (!error && data) {
-      setMessages((prev) => [...prev, data]);
+      setMessages((prev) => {
+        if (prev.some((m) => m.id === data.id)) return prev;
+        return [...prev, data];
+      });
       setContent("");
     }
+
     setSending(false);
   }
 
   return (
-    <div className="flex h-[calc(100vh-12rem)] flex-col rounded-2xl border border-earth-200 bg-white">
-      <div className="flex items-center gap-3 border-b border-earth-100 px-4 py-3">
+    <div className="flex h-[calc(100vh-16rem)] min-h-[34rem] flex-col overflow-hidden rounded-3xl border border-earth-200 bg-white shadow-sm">
+      <div className="flex items-center gap-3 border-b border-earth-100 bg-white px-4 py-3">
         <Avatar
           src={otherUser.avatar_url}
           name={otherUser.full_name ?? otherUser.username}
         />
-        <div>
-          <p className="font-medium text-earth-900">
+        <div className="min-w-0">
+          <p className="truncate font-semibold text-earth-900">
             {otherUser.full_name ?? otherUser.username}
           </p>
-          <p className="text-xs text-earth-800/60">@{otherUser.username}</p>
+          <p className="truncate text-xs text-earth-800/60">
+            @{otherUser.username}
+          </p>
         </div>
       </div>
 
-      <div className="flex-1 space-y-3 overflow-y-auto p-4">
+      <div className="flex-1 space-y-4 overflow-y-auto bg-earth-50/40 p-4">
+        {messages.length === 0 && (
+          <div className="mx-auto mt-10 max-w-sm rounded-2xl bg-white p-5 text-center shadow-sm">
+            <p className="font-semibold text-earth-900">Start the conversation</p>
+            <p className="mt-1 text-sm text-earth-800/60">
+              Ask about pickup, plant size, condition, or availability.
+            </p>
+          </div>
+        )}
+
         {messages.map((msg) => {
           const isMine = msg.sender_id === currentUserId;
+
           return (
             <div
               key={msg.id}
-              className={`flex ${isMine ? "justify-end" : "justify-start"}`}
+              className={`flex items-end gap-2 ${
+                isMine ? "justify-end" : "justify-start"
+              }`}
             >
+              {!isMine && (
+                <Avatar
+                  src={otherUser.avatar_url}
+                  name={otherUser.full_name ?? otherUser.username}
+                  size="sm"
+                />
+              )}
+
               <div
-                className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${
+                className={`max-w-[78%] rounded-3xl px-4 py-2.5 text-sm shadow-sm sm:max-w-[65%] ${
                   isMine
-                    ? "bg-leaf-600 text-white"
-                    : "bg-earth-100 text-earth-900"
+                    ? "rounded-br-md bg-leaf-600 text-white"
+                    : "rounded-bl-md bg-white text-earth-900"
                 }`}
               >
-                {msg.content}
+                <p className="whitespace-pre-wrap break-words">{msg.content}</p>
                 <p
-                  className={`mt-1 text-[10px] ${isMine ? "text-leaf-100" : "text-earth-800/50"}`}
+                  className={`mt-1 text-[10px] ${
+                    isMine ? "text-leaf-100" : "text-earth-800/50"
+                  }`}
                 >
-                  {new Date(msg.created_at).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {formatMessageTime(msg.created_at)}
                 </p>
               </div>
             </div>
           );
         })}
+
         <div ref={bottomRef} />
       </div>
 
       <form
         onSubmit={sendMessage}
-        className="flex gap-2 border-t border-earth-100 p-4"
+        className="sticky bottom-0 flex gap-2 border-t border-earth-100 bg-white p-3 sm:p-4"
       >
         <input
           type="text"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Type a message..."
-          className="flex-1 rounded-xl border border-earth-200 px-4 py-2.5 text-sm focus:border-leaf-400 focus:outline-none focus:ring-2 focus:ring-leaf-200"
+          className="min-w-0 flex-1 rounded-2xl border border-earth-200 px-4 py-3 text-sm focus:border-leaf-400 focus:outline-none focus:ring-2 focus:ring-leaf-200"
           maxLength={2000}
         />
         <Button type="submit" disabled={sending || !content.trim()}>
-          Send
+          {sending ? "Sending..." : "Send"}
         </Button>
       </form>
     </div>
