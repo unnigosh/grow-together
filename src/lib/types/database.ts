@@ -74,6 +74,43 @@ export interface ListingWithDetails extends Listing {
   listing_images: ListingImage[];
 }
 
+export interface Plant {
+  id: string;
+  user_id: string;
+  name: string;
+  species: string | null;
+  acquired_date: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PlantImage {
+  id: string;
+  plant_id: string;
+  url: string;
+  sort_order: number;
+  created_at: string;
+}
+
+export interface PlantNote {
+  id: string;
+  plant_id: string;
+  user_id: string;
+  content: string;
+  photo_url: string | null;
+  height_cm: number | null;
+  created_at: string;
+}
+
+export interface PlantWithImages extends Plant {
+  plant_images: PlantImage[];
+}
+
+export interface PlantWithDetails extends Plant {
+  plant_images: PlantImage[];
+  plant_notes: PlantNote[];
+}
+
 export interface ConversationWithDetails extends Conversation {
   listings: Pick<Listing, "id" | "title" | "status"> & {
     listing_images: Pick<ListingImage, "url">[];

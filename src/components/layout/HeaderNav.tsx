@@ -40,6 +40,12 @@ export function HeaderNav({ user, profile }: HeaderNavProps) {
       {user && (
         <>
           <Link
+            href="/plants"
+            className="rounded-lg px-3 py-2 text-sm font-medium text-earth-800 hover:bg-leaf-50"
+          >
+            My Plants
+          </Link>
+          <Link
             href="/favorites"
             className="rounded-lg px-3 py-2 text-sm font-medium text-earth-800 hover:bg-leaf-50"
           >
@@ -88,6 +94,13 @@ export function HeaderNav({ user, profile }: HeaderNavProps) {
                     onClick={() => setMenuOpen(false)}
                   >
                     My profile
+                  </Link>
+                  <Link
+                    href="/plants"
+                    className="block px-4 py-2 text-sm hover:bg-leaf-50"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    My Plants
                   </Link>
                   <Link
                     href="/profile/edit"
