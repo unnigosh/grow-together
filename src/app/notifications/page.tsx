@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { Avatar } from "@/components/ui/Avatar";
+import { MarkReadRefresher } from "./MarkReadRefresher";
 import type { NotificationWithDetails } from "@/lib/types/database";
 
 export const metadata: Metadata = { title: "Notifications" };
@@ -52,6 +53,7 @@ export default async function NotificationsPage() {
 
   return (
     <div className="mx-auto max-w-xl space-y-5">
+      <MarkReadRefresher hasUnread={unreadIds.length > 0} />
       <div>
         <h1 className="text-2xl font-bold text-earth-900">Notifications</h1>
         <p className="mt-0.5 text-sm text-earth-800/50">
