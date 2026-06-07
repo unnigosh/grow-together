@@ -4,12 +4,21 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
-import { ListingGrid } from "@/components/listings/ListingGrid";
 import { ProfileStats } from "@/components/profile/ProfileStats";
-import type { ListingWithDetails } from "@/lib/types/database";
+import { ProfileTabs } from "@/components/profile/ProfileTabs";
+import type {
+  ListingWithDetails,
+  PostWithAuthor,
+  QuestionWithAuthor,
+  PlantWithImages,
+} from "@/lib/types/database";
+
+type Tab = "posts" | "questions" | "listings" | "plants";
+const VALID_TABS: Tab[] = ["posts", "questions", "listings", "plants"];
 
 interface ProfilePageProps {
   params: Promise<{ username: string }>;
+  searchParams: Promise<{ tab?: string }>;
 }
 
 export async function generateMetadata({
@@ -22,19 +31,18 @@ export async function generateMetadata({
     .select("full_name, username")
     .eq("username", username)
     .single();
-
-  return {
-    title: profile?.full_name ?? `@${username}`,
-  };
+  return { title: profile?.full_name ?? `@${username}` };
 }
 
-export default async function ProfilePage({ params }: ProfilePageProps) {
+export default async function ProfilePage({
+  params,
+  searchParams,
+}: ProfilePageProps) {
   const { username } = await params;
+  const { tab: tabParam } = await searchParams;
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -46,30 +54,64 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   const isOwnProfile = user?.id === profile.id;
 
-  const { data: listings } = await supabase
-    .from("listings")
-    .select(
-      `
-      *,
-      profiles!listings_user_id_fkey (id, username, full_name, avatar_url, location),
-      listing_images (id, url, sort_order)
-    `
-    )
-    .eq("user_id", profile.id)
-    .order("created_at", { ascending: false });
+  // Resolve active tab — default to "posts", ignore "plants" for other users
+  const rawTab = VALID_TABS.includes(tabParam as Tab) ? (tabParam as Tab) : "posts";
+  const activeTab: Tab = rawTab === "plants" && !isOwnProfile ? "posts" : rawTab;
 
-  const allListings = (listings ?? []).map((listing) => ({
-    ...listing,
-    listing_images: [...(listing.listing_images ?? [])].sort(
+  // Fetch all data in parallel
+  const [postsResult, questionsResult, listingsResult, plantsResult] =
+    await Promise.all([
+      supabase
+        .from("posts")
+        .select("*, profiles!posts_user_id_fkey (id, username, full_name, avatar_url)")
+        .eq("user_id", profile.id)
+        .order("created_at", { ascending: false }),
+
+      supabase
+        .from("questions")
+        .select(
+          "*, profiles!questions_user_id_fkey (id, username, full_name, avatar_url), answers(count)"
+        )
+        .eq("user_id", profile.id)
+        .order("created_at", { ascending: false }),
+
+      supabase
+        .from("listings")
+        .select(
+          "*, profiles!listings_user_id_fkey (id, username, full_name, avatar_url, location), listing_images (id, url, sort_order)"
+        )
+        .eq("user_id", profile.id)
+        .order("created_at", { ascending: false }),
+
+      isOwnProfile
+        ? supabase
+            .from("plants")
+            .select("*, plant_images(id, url, sort_order)")
+            .eq("user_id", profile.id)
+            .order("created_at", { ascending: false })
+        : Promise.resolve({ data: null }),
+    ]);
+
+  const posts = (postsResult.data ?? []) as PostWithAuthor[];
+
+  const questions = (questionsResult.data ?? []) as QuestionWithAuthor[];
+
+  const listings = (listingsResult.data ?? []).map((l) => ({
+    ...l,
+    listing_images: [...(l.listing_images ?? [])].sort(
       (a, b) => a.sort_order - b.sort_order
     ),
   })) as ListingWithDetails[];
 
-  const activeCount = allListings.filter((l) => l.status === "active").length;
-  const soldCount = allListings.filter((l) => l.status === "sold").length;
+  const plants = (plantsResult.data ?? []).map((p) => ({
+    ...p,
+    plant_images: [...(p.plant_images ?? [])].sort(
+      (a, b) => a.sort_order - b.sort_order
+    ),
+  })) as PlantWithImages[];
 
   return (
-    <div className="-mx-4 space-y-8 sm:-mx-6 sm:space-y-10">
+    <div className="-mx-4 space-y-6 sm:-mx-6">
       {/* Hero */}
       <div className="overflow-hidden rounded-none border-b border-leaf-200/60 bg-gradient-to-br from-leaf-600 via-leaf-700 to-leaf-800 sm:rounded-3xl sm:border sm:shadow-md">
         <div className="px-4 pb-8 pt-10 sm:px-8 sm:pb-10 sm:pt-12">
@@ -109,51 +151,36 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         </div>
       </div>
 
-      <div className="space-y-8 px-4 sm:px-0">
+      {/* Body */}
+      <div className="space-y-6 px-4 sm:px-0">
         <ProfileStats
-          activeCount={activeCount}
-          soldCount={soldCount}
+          postCount={posts.length}
+          questionCount={questions.length}
+          listingCount={listings.length}
+          plantCount={isOwnProfile ? plants.length : null}
           joinDate={profile.created_at}
         />
 
         {profile.bio && (
           <div className="rounded-2xl border border-earth-200/80 bg-white p-5 shadow-sm sm:p-6">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-earth-800/60">
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-earth-800/50">
               About
             </h2>
-            <p className="mt-3 whitespace-pre-wrap text-base leading-relaxed text-earth-800">
+            <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-earth-800">
               {profile.bio}
             </p>
           </div>
         )}
 
-        <section>
-          <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="text-xl font-bold text-earth-900 sm:text-2xl">
-                {isOwnProfile ? "Your listings" : "Listings"}
-              </h2>
-              <p className="mt-1 text-sm text-earth-800/70">
-                {allListings.length === 0
-                  ? "No listings posted yet"
-                  : `${allListings.length} total · ${activeCount} active · ${soldCount} sold`}
-              </p>
-            </div>
-            {isOwnProfile && (
-              <Link href="/listings/new">
-                <Button size="sm">+ Post a listing</Button>
-              </Link>
-            )}
-          </div>
-          <ListingGrid
-            listings={allListings}
-            emptyMessage={
-              isOwnProfile
-                ? "You haven't posted any listings yet. Share what you're growing!"
-                : "This gardener hasn't posted any listings yet."
-            }
-          />
-        </section>
+        <ProfileTabs
+          username={profile.username}
+          activeTab={activeTab}
+          isOwnProfile={isOwnProfile}
+          posts={posts}
+          questions={questions}
+          listings={listings}
+          plants={plants}
+        />
       </div>
     </div>
   );
