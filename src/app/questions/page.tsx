@@ -38,16 +38,20 @@ export default async function QuestionsPage({ searchParams }: QuestionsPageProps
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-earth-900">Questions</h1>
           <p className="mt-0.5 text-sm text-earth-800/60">
             Ask the community for plant help and advice
           </p>
         </div>
-        {user && (
+        {user ? (
           <Link href="/questions/new">
             <Button size="sm">+ Ask</Button>
+          </Link>
+        ) : (
+          <Link href="/login">
+            <Button variant="outline" size="sm">Log in to ask</Button>
           </Link>
         )}
       </div>

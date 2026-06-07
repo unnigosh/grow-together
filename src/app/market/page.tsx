@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
+import { Button } from "@/components/ui/Button";
 import { ListingGrid } from "@/components/listings/ListingGrid";
 import { SearchBar } from "@/components/listings/SearchBar";
 import { CategoryFilter } from "@/components/listings/CategoryFilter";
@@ -56,12 +57,16 @@ export default async function MarketPage({ searchParams }: MarketPageProps) {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl bg-gradient-to-br from-leaf-600 to-leaf-800 px-6 py-10 text-white sm:px-10">
-        <h1 className="text-2xl font-bold sm:text-3xl">Plant Marketplace</h1>
-        <p className="mt-2 max-w-xl text-leaf-100">
-          Buy, sell, and trade plants, cuttings, seeds, herbs, and homegrown
-          produce with your community.
-        </p>
+      <section className="flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-earth-900">Marketplace</h1>
+          <p className="mt-0.5 text-sm text-earth-800/60">
+            Buy, sell, and trade plants with your community
+          </p>
+        </div>
+        <Link href="/listings/new">
+          <Button size="sm">+ List item</Button>
+        </Link>
       </section>
 
       <Suspense fallback={<div className="h-11 animate-pulse rounded-xl bg-earth-100" />}>

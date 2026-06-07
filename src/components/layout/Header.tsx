@@ -19,13 +19,11 @@ export async function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-leaf-100 bg-white/95 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-earth-200/60 bg-white/95 shadow-sm backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2 font-semibold text-leaf-700">
-          <span className="text-2xl" aria-hidden>
-            🌿
-          </span>
-          <span className="hidden sm:inline">GrowTogether</span>
+        <Link href="/" className="flex items-center gap-2 text-leaf-700">
+          <span className="text-xl" aria-hidden>🌿</span>
+          <span className="hidden text-base font-bold tracking-tight sm:inline">GrowTogether</span>
         </Link>
         <HeaderNav user={user} profile={profile} />
       </div>

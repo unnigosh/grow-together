@@ -6,14 +6,11 @@ import { PostFeed } from "@/components/feed/PostFeed";
 import type { PostWithAuthor } from "@/lib/types/database";
 
 export const metadata: Metadata = {
-  title: {
-    absolute: "GrowTogether — Plant Community",
-  },
+  title: { absolute: "GrowTogether — Plant Community" },
 };
 
 export default async function FeedPage() {
   const supabase = await createClient();
-
   const { data: { user } } = await supabase.auth.getUser();
 
   const { data: posts } = await supabase
@@ -26,11 +23,35 @@ export default async function FeedPage() {
 
   return (
     <div className="mx-auto max-w-xl space-y-6">
-      {/* Header row */}
+      {/* Welcome banner for logged-out visitors */}
+      {!user && (
+        <div className="rounded-2xl bg-gradient-to-br from-leaf-600 to-leaf-800 px-6 py-8 text-white">
+          <h1 className="text-xl font-bold sm:text-2xl">Welcome to GrowTogether 🌿</h1>
+          <p className="mt-1.5 text-sm text-leaf-100">
+            A community for plant lovers — share what you grow, ask questions, and find plants near you.
+          </p>
+          <div className="mt-4 flex gap-3">
+            <Link href="/signup">
+              <Button size="sm" className="bg-white text-leaf-700 hover:bg-leaf-50">
+                Join free
+              </Button>
+            </Link>
+            <Link href="/login">
+              <Button size="sm" variant="ghost" className="text-white hover:bg-white/10">
+                Log in
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Feed header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-earth-900">Community Feed</h1>
-          <p className="mt-0.5 text-sm text-earth-800/60">
+          <h1 className="text-xl font-bold text-earth-900">
+            {user ? "Community Feed" : "Recent posts"}
+          </h1>
+          <p className="mt-0.5 text-sm text-earth-800/50">
             What the community is growing and sharing
           </p>
         </div>
@@ -40,16 +61,6 @@ export default async function FeedPage() {
           </Link>
         )}
       </div>
-
-      {/* Prompt for logged-out visitors */}
-      {!user && (
-        <div className="rounded-2xl border border-leaf-200 bg-leaf-50 px-5 py-4 text-sm text-leaf-800">
-          <Link href="/signup" className="font-semibold hover:underline">
-            Join GrowTogether
-          </Link>{" "}
-          to share posts with your plant community.
-        </div>
-      )}
 
       <PostFeed posts={typedPosts} />
     </div>
