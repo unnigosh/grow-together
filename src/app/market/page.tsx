@@ -87,7 +87,7 @@ export default async function MarketPage({ searchParams }: MarketPageProps) {
               <> near <span className="font-medium text-earth-900">{location}</span></>
             )}
             {q && (
-              <> for <span className="font-medium text-earth-900">"{q}"</span></>
+              <> for <span className="font-medium text-earth-900">&quot;{q}&quot;</span></>
             )}
           </span>
           <Link
