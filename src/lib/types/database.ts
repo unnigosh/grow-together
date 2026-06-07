@@ -74,6 +74,47 @@ export interface ListingWithDetails extends Listing {
   listing_images: ListingImage[];
 }
 
+export type QuestionCategory =
+  | "pests"
+  | "disease"
+  | "fertilizer"
+  | "propagation"
+  | "watering"
+  | "general";
+
+export interface Question {
+  id: string;
+  user_id: string;
+  title: string;
+  content: string;
+  category: QuestionCategory;
+  photo_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Answer {
+  id: string;
+  question_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+}
+
+export interface QuestionWithAuthor extends Question {
+  profiles: Pick<Profile, "id" | "username" | "full_name" | "avatar_url">;
+  answers: { count: number }[];
+}
+
+export interface AnswerWithAuthor extends Answer {
+  profiles: Pick<Profile, "id" | "username" | "full_name" | "avatar_url">;
+}
+
+export interface QuestionWithDetails extends Question {
+  profiles: Pick<Profile, "id" | "username" | "full_name" | "avatar_url">;
+  answers: AnswerWithAuthor[];
+}
+
 export type PostType = "text" | "photo" | "update";
 
 export interface Post {

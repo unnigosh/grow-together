@@ -1,3 +1,22 @@
+export const QUESTION_CATEGORIES = [
+  { value: "general",      label: "General",      emoji: "💬" },
+  { value: "pests",        label: "Pests",         emoji: "🐛" },
+  { value: "disease",      label: "Disease",       emoji: "🍂" },
+  { value: "fertilizer",   label: "Fertilizer",    emoji: "🌿" },
+  { value: "propagation",  label: "Propagation",   emoji: "✂️" },
+  { value: "watering",     label: "Watering",      emoji: "💧" },
+] as const;
+
+export type QuestionCategoryValue = (typeof QUESTION_CATEGORIES)[number]["value"];
+
+export function getQuestionCategoryLabel(value: string): string {
+  return QUESTION_CATEGORIES.find((c) => c.value === value)?.label ?? value;
+}
+
+export function getQuestionCategoryEmoji(value: string): string {
+  return QUESTION_CATEGORIES.find((c) => c.value === value)?.emoji ?? "💬";
+}
+
 export const CATEGORIES = [
   { value: "indoor_plants", label: "Indoor plants" },
   { value: "outdoor_plants", label: "Outdoor plants" },
