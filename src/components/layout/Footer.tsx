@@ -15,7 +15,10 @@ export function Footer() {
           </div>
           <nav className="flex flex-wrap gap-4 text-sm text-earth-800/80">
             <Link href="/" className="hover:text-leaf-700">
-              Browse listings
+              Feed
+            </Link>
+            <Link href="/market" className="hover:text-leaf-700">
+              Marketplace
             </Link>
             <Link href="/listings/new" className="hover:text-leaf-700">
               Sell something

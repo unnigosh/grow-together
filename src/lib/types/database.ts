@@ -74,6 +74,21 @@ export interface ListingWithDetails extends Listing {
   listing_images: ListingImage[];
 }
 
+export type PostType = "text" | "photo" | "update";
+
+export interface Post {
+  id: string;
+  user_id: string;
+  content: string;
+  photo_url: string | null;
+  post_type: PostType;
+  created_at: string;
+}
+
+export interface PostWithAuthor extends Post {
+  profiles: Pick<Profile, "id" | "username" | "full_name" | "avatar_url">;
+}
+
 export interface Plant {
   id: string;
   user_id: string;
