@@ -62,7 +62,7 @@ export default async function FeedPage() {
         )}
       </div>
 
-      <PostFeed posts={typedPosts} />
+      <PostFeed posts={typedPosts} currentUserId={user?.id ?? null} />
     </div>
   );
 }

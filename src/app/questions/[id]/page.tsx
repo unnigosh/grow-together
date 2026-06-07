@@ -5,6 +5,8 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { Avatar } from "@/components/ui/Avatar";
 import { AddAnswerForm } from "./AddAnswerForm";
+import { DeleteQuestionButton } from "@/components/questions/DeleteQuestionButton";
+import { DeleteAnswerButton } from "@/components/questions/DeleteAnswerButton";
 import { getQuestionCategoryEmoji, getQuestionCategoryLabel } from "@/lib/constants";
 import type { QuestionWithDetails } from "@/lib/types/database";
 
@@ -104,7 +106,7 @@ export default async function QuestionPage({ params }: QuestionPageProps) {
               name={author.full_name ?? author.username}
             />
           </Link>
-          <div>
+          <div className="flex-1">
             <Link
               href={`/profile/${author.username}`}
               className="text-sm font-semibold text-earth-900 hover:text-leaf-700"
@@ -115,6 +117,9 @@ export default async function QuestionPage({ params }: QuestionPageProps) {
               Asked {formatDate(typed.created_at)}
             </p>
           </div>
+          {user?.id === typed.user_id && (
+            <DeleteQuestionButton questionId={typed.id} />
+          )}
         </div>
       </article>
 
@@ -144,7 +149,7 @@ export default async function QuestionPage({ params }: QuestionPageProps) {
                     size="sm"
                   />
                 </Link>
-                <div>
+                <div className="flex-1">
                   <Link
                     href={`/profile/${answerAuthor.username}`}
                     className="text-sm font-semibold text-earth-900 hover:text-leaf-700"
@@ -155,6 +160,9 @@ export default async function QuestionPage({ params }: QuestionPageProps) {
                     {formatDate(answer.created_at)}
                   </p>
                 </div>
+                {user?.id === answer.user_id && (
+                  <DeleteAnswerButton answerId={answer.id} />
+                )}
               </div>
             </div>
           );

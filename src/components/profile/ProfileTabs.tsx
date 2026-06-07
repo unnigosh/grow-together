@@ -18,6 +18,7 @@ interface ProfileTabsProps {
   username: string;
   activeTab: Tab;
   isOwnProfile: boolean;
+  currentUserId: string | null;
   posts: PostWithAuthor[];
   questions: QuestionWithAuthor[];
   listings: ListingWithDetails[];
@@ -44,6 +45,7 @@ export function ProfileTabs({
   username,
   activeTab,
   isOwnProfile,
+  currentUserId,
   posts,
   questions,
   listings,
@@ -97,7 +99,7 @@ export function ProfileTabs({
               }
             />
           ) : (
-            posts.map((post) => <PostCard key={post.id} post={post} />)
+            posts.map((post) => <PostCard key={post.id} post={post} currentUserId={currentUserId} />)
           )}
         </div>
       )}

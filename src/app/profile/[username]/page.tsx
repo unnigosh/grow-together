@@ -175,6 +175,7 @@ export default async function ProfilePage({
         <ProfileTabs
           username={profile.username}
           activeTab={activeTab}
+          currentUserId={user?.id ?? null}
           isOwnProfile={isOwnProfile}
           posts={posts}
           questions={questions}

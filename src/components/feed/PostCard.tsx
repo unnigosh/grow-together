@@ -1,10 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Avatar } from "@/components/ui/Avatar";
+import { DeletePostButton } from "./DeletePostButton";
 import type { PostWithAuthor } from "@/lib/types/database";
 
 interface PostCardProps {
   post: PostWithAuthor;
+  currentUserId?: string | null;
 }
 
 function formatPostDate(iso: string) {
@@ -22,8 +24,9 @@ function formatPostDate(iso: string) {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-export function PostCard({ post }: PostCardProps) {
+export function PostCard({ post, currentUserId }: PostCardProps) {
   const author = post.profiles;
+  const isOwner = !!currentUserId && currentUserId === post.user_id;
 
   return (
     <article className="overflow-hidden rounded-2xl border border-earth-200 bg-white shadow-sm transition hover:shadow-md">
@@ -46,6 +49,11 @@ export function PostCard({ post }: PostCardProps) {
             @{author.username} · {formatPostDate(post.created_at)}
           </p>
         </div>
+        {isOwner && (
+          <div className="shrink-0">
+            <DeletePostButton postId={post.id} />
+          </div>
+        )}
       </div>
 
       {/* Content */}

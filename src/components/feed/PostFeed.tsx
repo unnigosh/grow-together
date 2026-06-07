@@ -4,9 +4,10 @@ import type { PostWithAuthor } from "@/lib/types/database";
 
 interface PostFeedProps {
   posts: PostWithAuthor[];
+  currentUserId?: string | null;
 }
 
-export function PostFeed({ posts }: PostFeedProps) {
+export function PostFeed({ posts, currentUserId }: PostFeedProps) {
   if (posts.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-earth-200 bg-white px-6 py-16 text-center">
@@ -30,7 +31,7 @@ export function PostFeed({ posts }: PostFeedProps) {
   return (
     <div className="space-y-4">
       {posts.map((post) => (
-        <PostCard key={post.id} post={post} />
+        <PostCard key={post.id} post={post} currentUserId={currentUserId} />
       ))}
     </div>
   );
