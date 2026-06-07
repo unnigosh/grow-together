@@ -16,7 +16,7 @@ export function CategoryFilter() {
       params.delete("category");
     }
     const qs = params.toString();
-    return qs ? `/?${qs}` : "/";
+    return qs ? `/market?${qs}` : "/market";
   }
 
   return (

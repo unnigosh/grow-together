@@ -18,7 +18,7 @@ export function SearchBar() {
       } else {
         params.delete("q");
       }
-      router.push(`/?${params.toString()}`);
+      router.push(`/market?${params.toString()}`);
     },
     [query, router, searchParams]
   );
