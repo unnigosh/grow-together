@@ -32,7 +32,7 @@ export default async function FeedPage() {
           </p>
           <div className="mt-4 flex gap-3">
             <Link href="/signup">
-              <Button size="sm" className="bg-white text-leaf-700 hover:bg-leaf-100 active:bg-leaf-200">
+              <Button size="sm" variant="ghost" className="border border-white/60 text-white hover:bg-white/10">
                 Join free
               </Button>
             </Link>
