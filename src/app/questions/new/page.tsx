@@ -14,7 +14,7 @@ export default async function NewQuestionPage() {
     <div className="mx-auto max-w-xl">
       <h1 className="text-2xl font-bold text-earth-900">Ask the community</h1>
       <p className="mt-1 text-sm text-earth-800/60">
-        Share what you're seeing and get help from other growers.
+        Share what you&apos;re seeing and get help from other growers.
       </p>
       <CreateQuestionForm userId={user.id} />
     </div>
