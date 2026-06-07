@@ -9,13 +9,24 @@ export async function Header() {
   } = await supabase.auth.getUser();
 
   let profile = null;
+  let unreadCount = 0;
+
   if (user) {
-    const { data } = await supabase
-      .from("profiles")
-      .select("username, full_name, avatar_url")
-      .eq("id", user.id)
-      .single();
-    profile = data;
+    const [profileResult, notifResult] = await Promise.all([
+      supabase
+        .from("profiles")
+        .select("username, full_name, avatar_url")
+        .eq("id", user.id)
+        .single(),
+      supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .is("read_at", null),
+    ]);
+
+    profile = profileResult.data;
+    unreadCount = notifResult.count ?? 0;
   }
 
   return (
@@ -25,7 +36,7 @@ export async function Header() {
           <span className="text-xl" aria-hidden>🌿</span>
           <span className="hidden text-base font-bold tracking-tight sm:inline">GrowTogether</span>
         </Link>
-        <HeaderNav user={user} profile={profile} />
+        <HeaderNav user={user} profile={profile} unreadCount={unreadCount} />
       </div>
     </header>
   );

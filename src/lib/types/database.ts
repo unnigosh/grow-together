@@ -74,6 +74,24 @@ export interface ListingWithDetails extends Listing {
   listing_images: ListingImage[];
 }
 
+export type NotificationType = "answer";
+
+export interface Notification {
+  id: string;
+  user_id: string;
+  actor_id: string;
+  type: NotificationType;
+  question_id: string | null;
+  answer_id: string | null;
+  read_at: string | null;
+  created_at: string;
+}
+
+export interface NotificationWithDetails extends Notification {
+  actor: Pick<Profile, "id" | "username" | "full_name" | "avatar_url">;
+  questions: Pick<Question, "id" | "title"> | null;
+}
+
 export type QuestionCategory =
   | "pests"
   | "disease"
