@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { HeaderNav } from "./HeaderNav";
+import { BottomNav } from "./BottomNav";
 
 export async function Header() {
   const supabase = await createClient();
@@ -30,14 +31,17 @@ export async function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-earth-200/60 bg-white/95 shadow-sm backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2 text-leaf-700">
-          <span className="text-xl" aria-hidden>🌿</span>
-          <span className="hidden text-base font-bold tracking-tight sm:inline">GrowTogether</span>
-        </Link>
-        <HeaderNav user={user} profile={profile} unreadCount={unreadCount} />
-      </div>
-    </header>
+    <>
+      <header className="sticky top-0 z-50 border-b border-earth-200/60 bg-white/95 shadow-sm backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+          <Link href="/" className="flex items-center gap-2 text-leaf-700">
+            <span className="text-xl" aria-hidden>🌿</span>
+            <span className="hidden text-base font-bold tracking-tight sm:inline">GrowTogether</span>
+          </Link>
+          <HeaderNav user={user} profile={profile} unreadCount={unreadCount} />
+        </div>
+      </header>
+      <BottomNav user={user} unreadCount={unreadCount} />
+    </>
   );
 }
